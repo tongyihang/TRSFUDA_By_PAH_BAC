@@ -23,8 +23,8 @@ Additional experimental data and code supporting the findings of this study are 
 - **[GTA5 → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/Tag_version/model_iter047499.pth)** (168 MB)
 ### Trained Model Weights for Synthia → Cityscapes adaptation
 - **[Synthia → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/Synthia2Cityscapes/model_iter047499.pth)** (169 MB)
-### Trained Model Weights for ACDC → Cityscapes adaptation
-- **[ACDC → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/acdc2Cityscapes/model_iter047499.pth)** (168 MB)
+### Trained Model Weights for Cityscapes → ACDC adaptation
+- **[Cityscapes → ACDC.pth](https://github.com/tongyihang/tongyihang/releases/download/acdc2Cityscapes/model_iter047499.pth)** (168 MB)
 
 
 
