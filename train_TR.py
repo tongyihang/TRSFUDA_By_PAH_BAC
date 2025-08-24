@@ -96,7 +96,7 @@ def train(cfg, local_rank, distributed):
             "epochs": 10,
     },
 )
-    logger = logging.getLogger("DTST.trainer")
+    logger = logging.getLogger("TR.trainer")
     logger.info("Start training")
 
     feature_extractor = build_feature_extractor(cfg)
@@ -626,7 +626,7 @@ def main():
     if output_dir:
         mkdir(output_dir)
 
-    logger = setup_logger("DTST", output_dir, args.local_rank)
+    logger = setup_logger("TR", output_dir, args.local_rank)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 
@@ -644,4 +644,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
