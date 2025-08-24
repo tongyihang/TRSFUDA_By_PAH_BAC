@@ -26,5 +26,12 @@ Additional experimental data and code supporting the findings of this study are 
 ### Trained Model Weights for Cityscapes → ACDC adaptation
 - **[Cityscapes → ACDC.pth](https://github.com/tongyihang/tongyihang/releases/download/acdc2Cityscapes/model_iter047499.pth)** (168 MB)
 
+### 📂 Visualization Folders
+
+- **acdc_test_color**: Contains prediction results on the ACDC test set, where each file represents the semantic segmentation visualization of an input image.  
+- **G2cityscapes_val**: Contains visualization results of the model on the Cityscapes validation set in the GTA5 → Cityscapes task.  
+
+
+
 
 
