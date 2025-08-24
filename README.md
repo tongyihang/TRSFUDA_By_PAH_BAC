@@ -20,7 +20,7 @@ The datasets used in this study are publicly available benchmark datasets:
 Additional experimental data and code supporting the findings of this study are available from the corresponding author upon reasonable request.
 
 ### Trained Model Weights for GTA5 → Cityscapes adaptation
-- **[model_iter047499.pth](https://github.com/tongyihang/tongyihang/releases/download/Tag_version/model_iter047499.pth)** (168 MB)
+- **[GTA5 → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/Tag_version/model_iter047499.pth)** (168 MB)
 
 
 
