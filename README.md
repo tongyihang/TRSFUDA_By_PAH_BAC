@@ -21,6 +21,8 @@ Additional experimental data and code supporting the findings of this study are 
 
 ### Trained Model Weights for GTA5 → Cityscapes adaptation
 - **[GTA5 → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/Tag_version/model_iter047499.pth)** (168 MB)
+### Trained Model Weights for Synthia → Cityscapes adaptation
+- **[Synthia → Cityscapes.pth](https://github.com/tongyihang/tongyihang/releases/download/Synthia2Cityscapes/model_iter047499.pth)** (168 MB)
 
 
 
