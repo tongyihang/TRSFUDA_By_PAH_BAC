@@ -35,14 +35,14 @@ from core.models.losses import MinimumClassConfusionLoss
 import torch.nn as nn
 
 def dilation(mask, kernel_size=7):
-    # max pooling 相当于膨胀
+    # max pooling 
     if mask.dim() == 3:
         mask = mask.unsqueeze(0)
     return F.max_pool2d(mask.float(), kernel_size, stride=1, padding=kernel_size // 2)
     
 
 def erosion(mask, kernel_size=7):
-    # min pooling 近似腐蚀（用 -mask 转换）
+    # min pooling 
     if mask.dim() == 3:
         mask = mask.unsqueeze(0)
     return -F.max_pool2d(-mask.float(), kernel_size, stride=1, padding=kernel_size // 2)
@@ -59,35 +59,7 @@ def shift_log(x, offset=1e-6):
 
     return torch.log(torch.clamp(x + offset, max=1.))
 class WorstCaseEstimationLoss(nn.Module):
-    r"""
-    Worst-case Estimation loss from `Debiased Self-Training for Semi-Supervised Learning <https://arxiv.org/abs/2202.07136>`_
-    that forces the worst possible head :math:`h_{\text{worst}}` to predict correctly on all labeled samples
-    :math:`\mathcal{L}` while making as many mistakes as possible on unlabeled data :math:`\mathcal{U}`. In the
-    classification task, it is defined as:
-
-    .. math::
-        loss(\mathcal{L}, \mathcal{U}) =
-        \eta' \mathbb{E}_{y^l, y_{adv}^l \sim\hat{\mathcal{L}}} -\log\left(\frac{\exp(y_{adv}^l[h_{y^l}])}{\sum_j \exp(y_{adv}^l[j])}\right) +
-        \mathbb{E}_{y^u, y_{adv}^u \sim\hat{\mathcal{U}}} -\log\left(1-\frac{\exp(y_{adv}^u[h_{y^u}])}{\sum_j \exp(y_{adv}^u[j])}\right),
-
-    where :math:`y^l` and :math:`y^u` are logits output by the main head :math:`h` on labeled data and unlabeled data,
-    respectively. :math:`y_{adv}^l` and :math:`y_{adv}^u` are logits output by the worst-case estimation
-    head :math:`h_{\text{worst}}`. :math:`h_y` refers to the predicted label when the logits output is :math:`y`.
-
-    Args:
-        eta_prime (float): the trade-off hyper parameter :math:`\eta'`.
-
-    Inputs:
-        - y_l: logits output :math:`y^l` by the main head on labeled data
-        - y_l_adv: logits output :math:`y^l_{adv}` by the worst-case estimation head on labeled data
-        - y_u: logits output :math:`y^u` by the main head on unlabeled data
-        - y_u_adv: logits output :math:`y^u_{adv}` by the worst-case estimation head on unlabeled data
-
-    Shape:
-        - Inputs: :math:`(minibatch, C)` where C denotes the number of classes.
-        - Output: scalar.
-
-    """
+   
 
     def __init__(self):
         super(WorstCaseEstimationLoss, self).__init__()
@@ -95,12 +67,12 @@ class WorstCaseEstimationLoss(nn.Module):
     def forward(self,y_u, y_u_adv):
         
         prob = F.softmax(y_u_adv, dim=1)
-        #新加的 置信度低的做对抗
+ 
         """
         conf,psd_label = prob.max(1)
-        mask = conf < 0.40                     # 置信度阈值过滤
-        filtered_psd_label = y_u.clone()  # 正确变量名
-        filtered_psd_label[~mask] = 255         # 将低置信度位置设为 IGNORE_INDEX
+        mask = conf < 0.40                     
+        filtered_psd_label = y_u.clone()  
+        filtered_psd_label[~mask] = 255        
         y_u = filtered_psd_label
         loss = F.cross_entropy(y_u_adv, y_u, ignore_index=255)
         return loss
@@ -120,7 +92,7 @@ def train(cfg, local_rank, distributed):
         config={
             "learning_rate": 0.02,
             "architecture": "CNN",
-            "dataset": "CIFAR-100",
+            "dataset": "100",
             "epochs": 10,
     },
 )
@@ -345,10 +317,10 @@ def train(cfg, local_rank, distributed):
                     #print(type(tgt_prob_his))
                     _,new_label = F.softmax(tgt_pred_his_full,dim=1).max(1)
                     conf,psd_label = tgt_prob_his.max(1)
-                    #mask = conf > 0.95                     # 置信度阈值过滤
-                    #filtered_psd_label = psd_label.clone()  # 正确变量名
-                    #filtered_psd_label[~mask] = 255         # 将低置信度位置设为 IGNORE_INDEX
-                    #psd_label = filtered_psd_label          # 用于后续训练
+                    #mask = conf > 0.95                     
+                    #filtered_psd_label = psd_label.clone() 
+                    #filtered_psd_label[~mask] = 255       
+                    #psd_label = filtered_psd_label        
 
             if cfg.METAPL.OPEN:#false
                 # and (iteration+1) > cfg.METAPL.VAL_UPDATE 
@@ -411,8 +383,8 @@ def train(cfg, local_rank, distributed):
             w_add = -(5 - 5*torch.exp(-(max_values * max_values) / 2 )) + 2
             """
             #tgt_pred_loss = tgt_pred.permute(0, 2, 3, 1).contiguous().view(-1,19)
-            #loss3 = minloss(tgt_pred_loss)#混淆损失
-            #权重w_分类论文中思想
+            #loss3 = minloss(tgt_pred_loss)#
+           
             w = -torch.sum(output_w*torch.log2(output_w+1e-5),dim=1)
             max_entropy = torch.log2(torch.tensor(cfg.MODEL.NUM_CLASSES,dtype=w.dtype,device=w.device))
             w = w / max_entropy
@@ -422,7 +394,7 @@ def train(cfg, local_rank, distributed):
             wo_loss = worse_loss(new_label.long(),tgt_pred_worse)
             #pesudo_p_loss = st_loss.mean()
             pesudo_p_loss = (st_loss * (0.5 + 0.5*(uc_map_eln-1).exp()) ).mean()
-            #加一个对比损失 膨胀-腐蚀
+          
             
             loss_dilation = 0.0
             temperature = 1
@@ -448,10 +420,10 @@ def train(cfg, local_rank, distributed):
                 common_mask = common_mask.reshape(-1,1)
                 feat_input1 = feat_input[b].permute(1,2,0).reshape(-1,2048)
                 if torch.count_nonzero(private_mask)>0  and torch.count_nonzero(M_p)>0 and torch.count_nonzero(common_mask)>64:
-                    private_feat = feat_input1[(M_p!=0).squeeze(1)]# 有效*2048
-                    private_proto = feat_input1[(M_p!=0).squeeze(1)]#腐蚀有效*2048
-                    private_proto = torch.mean(private_proto, dim=0, keepdim=True)#原型 1*2048
-                    common_feat = feat_input1[(common_mask!=0).squeeze(1)]#边界有效*2048
+                    private_feat = feat_input1[(M_p!=0).squeeze(1)]
+                    private_proto = feat_input1[(M_p!=0).squeeze(1)]
+                    private_proto = torch.mean(private_proto, dim=0, keepdim=True)
+                    common_feat = feat_input1[(common_mask!=0).squeeze(1)]
                     
                     target_feat = torch.cat([private_proto, common_feat], dim=0) 
                     logits = torch.matmul(F.normalize(private_feat, dim=-1), F.normalize(target_feat, dim=-1).T)
@@ -672,3 +644,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
