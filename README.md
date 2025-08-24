@@ -1,14 +1,14 @@
-##Towards Robust Source-Free Unsupervised Domain Adaptation in Semantic Segmentation with Pseudo-Adversarial and Boundary-Aware Contrastive Learning##
+## Towards Robust Source-Free Unsupervised Domain Adaptation in Semantic Segmentation with Pseudo-Adversarial and Boundary-Aware Contrastive Learning
 
-###Comparison with various uncertainty estimation methods###
+### Comparison with various uncertainty estimation methods
 ![Pipeline](fig7.png)
-###Pipeline###
+### Pipeline
 ![Pipeline](fig3.png)
-###Requirements###
+### Requirements
 Please see requirements.txt for all the other requirements.
 
-###Getting started###
-## Data Availability
+### Getting started
+Data Availability
 
 The datasets used in this study are publicly available benchmark datasets:  
 
